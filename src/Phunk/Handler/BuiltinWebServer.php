@@ -29,6 +29,11 @@ class BuiltinWebServer implements \Phunk\Handler
         $write = array();
         $except = array();
         while (1) {
+            if (false === $this->_check_process()) {
+                fputs(STDERR, "server stopped.\n");
+                break;
+            }
+
             $read = array(STDIN, $this->_pipes[1], $this->_pipes[2]);
             $changed = stream_select($read, $write, $except, 0, 200000);
             if (false === $changed) {
@@ -67,7 +72,11 @@ class BuiltinWebServer implements \Phunk\Handler
             2 => array("pipe", "w"),
         );
 
-        $this->_process = proc_open("$php -S=localhost:1985 {$this->_temporary_file}", $descriptor_spec, $this->_pipes);
+        $command = "$php -S=localhost:1985 {$this->_temporary_file}";
+        $this->_process = proc_open($command, $descriptor_spec, $this->_pipes);
+        if (false === $this->_process) {
+            throw new \Exception("command failed: $command");
+        }
 
         stream_set_blocking(STDIN, 0);
         stream_set_blocking($this->_pipes[1], 0);
@@ -93,10 +102,22 @@ CODE;
 
     function _finalize()
     {
-        foreach ($this->_pipes as $pipe) {
-            fclose($pipe);
+        if ($this->_process) {
+            foreach ($this->_pipes as $pipe) {
+                fclose($pipe);
+            }
+            proc_terminate($this->_process);
         }
-        proc_terminate($this->_process);
         unlink($this->_temporary_file);
+    }
+
+    function _check_process()
+    {
+        $status = proc_get_status($this->_process);
+        if (false === $status || $status['running']) {
+            $this->_process = false;
+            return false;
+        }
+        return true;
     }
 }

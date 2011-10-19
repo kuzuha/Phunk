@@ -31,6 +31,3 @@ class Loader
         return new $class();
     }
 }
-
-
-

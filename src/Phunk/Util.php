@@ -22,15 +22,15 @@ class Util
     /**
      * @static
      * @param string $phunki
-     * @param string $handler
+     * @param array $options
      */
-    static function phunk_up($phunki, $handler = null)
+    static function phunk_up($phunki, array $options = array())
     {
         $app = self::load_phunki($phunki);
-        if (null === $handler) {
-            Loader::auto()->run($app);
+        if (array_key_exists('handler', $options)) {
+            Loader::load($options['handler'])->run($app);
         } else {
-            Loader::load($handler)->run($app);
+            Loader::auto()->run($app);
         }
     }
 }

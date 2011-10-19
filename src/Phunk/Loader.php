@@ -6,26 +6,26 @@ class Loader
 {
     /**
      * @static
-     * @param array $args
+     * @param array $options
      * @return Handler
      */
-    static function auto(array $args = array())
+    static function auto(array $options = array())
     {
         switch (PHP_SAPI) {
             case 'cli':
-                return self::load('BuiltinWebServer', $args);
+                return self::load('BuiltinWebServer', $options);
             default:
-                return self::load('Simple', $args);
+                return self::load('Simple', $options);
         }
     }
 
     /**
      * @static
      * @param string $handler
-     * @param array $args
+     * @param array $options
      * @return Handler
      */
-    static function load($handler, array $args = array())
+    static function load($handler, array $options = array())
     {
         $class = "Phunk\\Handler\\$handler";
         return new $class();

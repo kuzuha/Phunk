@@ -85,6 +85,7 @@ class Simple implements \Phunk\Handler
     /**
      * @internal
      * @param array $res
+     * @return void
      */
     function _handle_response(array $res)
     {

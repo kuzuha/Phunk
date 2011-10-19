@@ -4,7 +4,11 @@ namespace Phunk\Handler;
 
 class Simple implements \Phunk\Handler
 {
-    public $status_code = array(
+    /**
+     * @internal
+     * @var array
+     */
+    public $_status_code = array(
         100 => 'Continue',
         101 => 'Switching Protocols',
         102 => 'Processing', # RFC 2518 (WebDAV)
@@ -59,6 +63,10 @@ class Simple implements \Phunk\Handler
         510 => 'Not Extended', # RFC 2774
     );
 
+    /**
+     * @param callable $app
+     * @return void
+     */
     function run(callable $app)
     {
         $env = $this->_build_env();
@@ -66,13 +74,21 @@ class Simple implements \Phunk\Handler
         $this->_handle_response($res);
     }
 
+    /**
+     * @internal
+     * @return array
+     */
     function _build_env() {
         return array();
     }
 
+    /**
+     * @internal
+     * @param array $res
+     */
     function _handle_response(array $res)
     {
-        header("Status: {$res[0]} {$this->status_code[$res[0]]}");
+        header("Status: {$res[0]} {$this->_status_code[$res[0]]}");
         foreach ($res[1] as $header) {
             header($header);
         }

@@ -20,6 +20,11 @@ class BuiltinWebServer implements \Phunk\Handler
      */
     public $_pipes;
 
+    /**
+     * @param callable $app
+     * @throws \Exception
+     * @return void
+     */
     function run(callable $app)
     {
         $this->_build_server_process();
@@ -56,6 +61,11 @@ class BuiltinWebServer implements \Phunk\Handler
         $this->_finalize();
     }
 
+    /**
+     * @internal
+     * @throws \Exception
+     * @return void
+     */
     function _build_server_process()
     {
         $this->_build_temporary_file();
@@ -83,6 +93,10 @@ class BuiltinWebServer implements \Phunk\Handler
         stream_set_blocking($this->_pipes[2], 0);
     }
 
+    /**
+     * @internal
+     * @return void
+     */
     function _build_temporary_file()
     {
         global $argv;
@@ -100,6 +114,10 @@ CODE;
         file_put_contents($this->_temporary_file, $code);
     }
 
+    /**
+     * @internal
+     * @return void
+     */
     function _finalize()
     {
         if ($this->_process) {
@@ -111,6 +129,10 @@ CODE;
         unlink($this->_temporary_file);
     }
 
+    /**
+     * @internal
+     * @return bool
+     */
     function _check_process()
     {
         $status = proc_get_status($this->_process);

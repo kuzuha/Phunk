@@ -2,7 +2,7 @@
 
 namespace Phunk\Handler;
 
-class BuiltinServer implements \Phunk\Handler
+class BuiltinWebServer implements \Phunk\Handler
 {
     /**
      * @internal

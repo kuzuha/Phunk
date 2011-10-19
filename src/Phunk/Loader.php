@@ -13,7 +13,7 @@ class Loader
     {
         switch (PHP_SAPI) {
             case 'cli':
-                return self::load('BuiltinServer', $args);
+                return self::load('BuiltinWebServer', $args);
             default:
                 return self::load('Simple', $args);
         }

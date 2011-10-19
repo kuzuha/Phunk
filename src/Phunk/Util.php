@@ -13,10 +13,14 @@ class Util
      */
     static function load_phunki($phunki)
     {
+        $app = null;
         require $phunki;
-        $vars = get_defined_vars();
-        $keys = array_keys($vars);
-        return $vars[$keys[count($keys) - 1]];
+        if (null === $app) {
+            $vars = get_defined_vars();
+            $keys = array_keys($vars);
+            $app = $vars[$keys[count($keys) - 1]];
+        }
+        return $app;
     }
 
     /**

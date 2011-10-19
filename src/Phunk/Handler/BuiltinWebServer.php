@@ -45,9 +45,9 @@ class BuiltinWebServer implements \Phunk\Handler
                         if ('stop' === $in) {
                             break 2;
                         }
-                    } elseif ($this->_pipes && $this->_pipes[1] === $r) {
+                    } elseif ($this->_pipes[1] === $r) {
                         print fread($r, 8192);
-                    } else if ($this->_pipes && $this->_pipes[2] === $r) {
+                    } else if ($this->_pipes[2] === $r) {
                         fputs(STDERR, fread($r, 8192));
                     }
                 }

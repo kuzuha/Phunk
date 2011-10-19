@@ -76,7 +76,6 @@ class Simple implements \Phunk\Handler
         foreach ($res[1] as $header) {
             header($header);
         }
-        unset($header);
 
         $body = $res[2];
         if (is_string($body)) {
@@ -85,7 +84,6 @@ class Simple implements \Phunk\Handler
             foreach ($body as $string) {
                 print $string;
             }
-            unset($string);
         }
     }
 }

@@ -115,7 +115,7 @@ class BuiltinWebServer implements \Phunk\Handler
         $this->_temporary_file = tempnam($temporary_dir, 'phunk');
         $include_path = get_include_path();
         $phunki = realpath($argv[0]);
-                $trace = debug_backtrace(false, 4);
+        $trace = debug_backtrace(false, 4);
         if (isset($trace[3]) && 'phunk_up' === $trace[3]['function']) {
             $code = <<<CODE
 <?php

@@ -58,7 +58,6 @@ class BuiltinWebServer implements \Phunk\Handler
                 }
             }
         }
-        $this->_finalize();
     }
 
     /**
@@ -69,6 +68,18 @@ class BuiltinWebServer implements \Phunk\Handler
     function _build_server_process()
     {
         $this->_build_temporary_file();
+        register_shutdown_function(
+            function()
+            {
+                if ($this->_process) {
+                    foreach ($this->_pipes as $pipe) {
+                        fclose($pipe);
+                    }
+                    proc_terminate($this->_process);
+                }
+                unlink($this->_temporary_file);
+            }
+        );
 
         if (array_key_exists('_', $_SERVER)) {
             $php = $_SERVER['_'];
@@ -112,21 +123,6 @@ spl_autoload_register(array('Autoloader_Simple', 'load'));
 Phunk\Util::phunk_up('$phunki');
 CODE;
         file_put_contents($this->_temporary_file, $code);
-    }
-
-    /**
-     * @internal
-     * @return void
-     */
-    function _finalize()
-    {
-        if ($this->_process) {
-            foreach ($this->_pipes as $pipe) {
-                fclose($pipe);
-            }
-            proc_terminate($this->_process);
-        }
-        unlink($this->_temporary_file);
     }
 
     /**

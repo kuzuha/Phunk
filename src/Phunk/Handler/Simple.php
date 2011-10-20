@@ -70,7 +70,9 @@ class Simple implements \Phunk\Handler
     function run(callable $app)
     {
         $env = $this->_build_env();
+        ob_start();
         $res = $app($env);
+        ob_end_clean();
         $this->_handle_response($res);
     }
 
@@ -78,8 +80,19 @@ class Simple implements \Phunk\Handler
      * @internal
      * @return array
      */
-    function _build_env() {
-        return array();
+    function _build_env()
+    {
+        return array(
+            'GET' => $_GET,
+            'POST' => $_POST,
+            'FILES' => $_FILES,
+            'COOKIE' => $_COOKIE,
+            'SESSION' => &$_SESSION,
+            'phunki.version' => array(0, 1),
+            'phunki.url_scheme' => isset($_SERVER['HTTPS']) ? 'https' : 'http',
+            'phunki.input' => fopen('php://stdin', 'r'),
+            'phunki.errors' => fopen('php://stderr', 'w'),
+        ) + $_SERVER + $_ENV;
     }
 
     /**
@@ -89,6 +102,8 @@ class Simple implements \Phunk\Handler
      */
     function _handle_response(array $res)
     {
+        $this->_rebuild_headers($res);
+
         header("Status: {$res[0]} {$this->_status_code[$res[0]]}");
         foreach ($res[1] as $header) {
             header($header);
@@ -101,6 +116,21 @@ class Simple implements \Phunk\Handler
             foreach ($body as $string) {
                 print $string;
             }
+        }
+    }
+
+    /**
+     * @internal
+     * @param array $res
+     * @return void
+     */
+    function _rebuild_headers(array &$res)
+    {
+        $headers = headers_list();
+        foreach ($headers as $header) {
+            list($header) = explode(':', $header);
+            header_remove($header);
+            $res[1][] = $header;
         }
     }
 }

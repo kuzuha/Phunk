@@ -74,6 +74,7 @@ class Simple implements \Phunk\Handler
         $res = $app($env);
         ob_end_clean();
         $this->_handle_response($res);
+        exit;
     }
 
     /**

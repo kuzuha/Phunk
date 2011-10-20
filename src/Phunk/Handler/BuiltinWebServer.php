@@ -114,11 +114,11 @@ class BuiltinWebServer implements \Phunk\Handler
         $temporary_dir = sys_get_temp_dir();
         $this->_temporary_file = tempnam($temporary_dir, 'phunk');
         $include_path = get_include_path();
-        $phunki = realpath($argv[1]);
+        $phunki = realpath($argv[0]);
         $code = <<<CODE
 <?php
 set_include_path('$include_path');
-require 'Autoloader/Simple.php';
+require_once 'Autoloader/Simple.php';
 spl_autoload_register(array('Autoloader_Simple', 'load'));
 Phunk\Util::phunk_up('$phunki');
 CODE;

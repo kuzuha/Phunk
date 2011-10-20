@@ -115,13 +115,19 @@ class BuiltinWebServer implements \Phunk\Handler
         $this->_temporary_file = tempnam($temporary_dir, 'phunk');
         $include_path = get_include_path();
         $phunki = realpath($argv[0]);
-        $code = <<<CODE
+                $trace = debug_backtrace(false, 4);
+        if (isset($trace[3]) && 'phunk_up' === $trace[3]['function']) {
+            $code = <<<CODE
 <?php
 set_include_path('$include_path');
 require_once 'Autoloader/Simple.php';
 spl_autoload_register(array('Autoloader_Simple', 'load'));
 Phunk\Util::phunk_up('$phunki');
 CODE;
+        } else {
+            $code = "<?php require '$phunki';";
+        }
+
         file_put_contents($this->_temporary_file, $code);
     }
 

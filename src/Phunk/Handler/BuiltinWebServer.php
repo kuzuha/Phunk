@@ -116,7 +116,9 @@ class BuiltinWebServer implements \Phunk\Handler
         $include_path = get_include_path();
         $phunki = realpath($argv[0]);
         $trace = debug_backtrace(false, 4);
-        if (isset($trace[3]) && 'phunk_up' === $trace[3]['function']) {
+        if (isset($trace[3]) &&
+            preg_match('/' . preg_quote(DIRECTORY_SEPARATOR, '/') . 'phunk_up\\.php$/', $trace[3]['file'])
+        ) {
             $code = <<<CODE
 <?php
 set_include_path('$include_path');
@@ -127,7 +129,6 @@ CODE;
         } else {
             $code = "<?php require '$phunki';";
         }
-
         file_put_contents($this->_temporary_file, $code);
     }
 

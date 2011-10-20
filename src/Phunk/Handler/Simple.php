@@ -70,9 +70,7 @@ class Simple implements \Phunk\Handler
     function run(callable $app)
     {
         $env = $this->_build_env();
-        ob_start();
         $res = $app($env);
-        ob_end_clean();
         $this->_handle_response($res);
     }
 
@@ -102,9 +100,7 @@ class Simple implements \Phunk\Handler
      */
     function _handle_response(array $res)
     {
-        $this->_rebuild_headers($res);
-
-        header("Status: {$res[0]} {$this->_status_code[$res[0]]}");
+        header("HTTP/1.1 {$res[0]} {$this->_status_code[$res[0]]}");
         foreach ($res[1] as $header) {
             header($header);
         }
@@ -116,21 +112,6 @@ class Simple implements \Phunk\Handler
             foreach ($body as $string) {
                 print $string;
             }
-        }
-    }
-
-    /**
-     * @internal
-     * @param array $res
-     * @return void
-     */
-    function _rebuild_headers(array &$res)
-    {
-        $headers = headers_list();
-        foreach ($headers as $header) {
-            list($header) = explode(':', $header);
-            header_remove($header);
-            $res[1][] = $header;
         }
     }
 }

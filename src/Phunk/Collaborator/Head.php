@@ -15,7 +15,9 @@ class Head implements \Phunk\Collaborator
         return function($env) use ($app)
         {
             $res = $app($env);
-            $res[2] = '';
+            if ('HEAD' === $env['REQUEST_METHOD']) {
+                $res[2] = '';
+            }
             return $res;
         };
     }

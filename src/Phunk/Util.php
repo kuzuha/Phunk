@@ -71,8 +71,11 @@ class Util
      */
     static function _fix_class_name($class_name, $namespace)
     {
-        if (0 === preg_match('/^\\\\?' . preg_quote($namespace, '/') . '\\\\/', $class_name)) {
-            $class_name = $namespace . '\\' . $class_name;
+        if ('\\' === $class_name[0]) {
+            return $class_name;
+        }
+        if (0 === preg_match('/^' . preg_quote("$namespace\\", '/') . '/', $class_name)) {
+            $class_name = "$namespace\\$class_name";
         }
         return $class_name;
     }

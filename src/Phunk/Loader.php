@@ -13,6 +13,9 @@ class Loader
     {
         switch (PHP_SAPI) {
             case 'cli':
+                if (isset($_SERVER['beat_version'])) {
+                    return self::load('Beat', $options);
+                }
                 return self::load('BuiltinWebServer', $options);
             default:
                 return self::load('Simple', $options);

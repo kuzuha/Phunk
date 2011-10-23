@@ -81,19 +81,13 @@ class BuiltinWebServer implements \Phunk\Handler
             }
         );
 
-        if (array_key_exists('_', $_SERVER)) {
-            $php = $_SERVER['_'];
-        } else {
-            $php = PHP_BINDIR . DIRECTORY_SEPARATOR . 'php';
-        }
-
         $descriptor_spec = array(
             0 => array("pipe", "r"),
             1 => array("pipe", "w"),
             2 => array("pipe", "w"),
         );
 
-        $command = "$php -S=localhost:1985 {$this->_temporary_file}";
+        $command = $this->_get_command();
         $this->_process = proc_open($command, $descriptor_spec, $this->_pipes);
         if (false === $this->_process) {
             throw new \Exception("command failed: $command");
@@ -110,11 +104,10 @@ class BuiltinWebServer implements \Phunk\Handler
      */
     function _build_temporary_file()
     {
-        global $argv;
         $temporary_dir = sys_get_temp_dir();
         $this->_temporary_file = tempnam($temporary_dir, 'phunk');
         $include_path = get_include_path();
-        $phunki = realpath($argv[0]);
+        $phunki = realpath($_SERVER['argv'][1]);
         $trace = debug_backtrace(false, 4);
         if (isset($trace[3]) &&
             preg_match('/' . preg_quote(DIRECTORY_SEPARATOR, '/') . 'phunk_up\\.php$/', $trace[3]['file'])
@@ -143,5 +136,15 @@ CODE;
             return true;
         }
         return $this->_process = false;
+    }
+
+    /**
+     * @internal
+     * @return string
+     */
+    function _get_command()
+    {
+        $php = PHP_BINDIR . DIRECTORY_SEPARATOR . 'php';
+        return "$php -S=localhost:1985 {$this->_temporary_file}";
     }
 }

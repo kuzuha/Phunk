@@ -26,18 +26,40 @@ class RebuildHeaders implements \Phunk\Collaborator
      * @static
      * @return array
      */
+    static function _merge_headers()
+    {
+        $headers_array = func_get_args();
+        $merged = array();
+        foreach ($headers_array as $headers) {
+            foreach ($headers as $key => $value) {
+                if (is_int($key)) {
+                    list($key, $value) = explode(':', $value, 2);
+                }
+                if (isset($headers[$key])) {
+                    $merged[$key] = array($headers[$key], $value);
+                } else {
+                    $merged[$key] = $value;
+                }
+            }
+        }
+        return $merged;
+    }
+
+    /**
+     * @internal
+     * @static
+     * @return array
+     */
     static function _remove_headers()
     {
         if (headers_sent($file, $line)) {
             trigger_error("headers already sent by $file:$line");
-        } else {
-            $headers = headers_list();
-            foreach ($headers as $header) {
-                list($header) = explode(':', $header);
-                header_remove($header);
-            }
-            return $headers;
+            return array();
         }
+
+        $headers = self::_merge_headers(headers_list());
+        header_remove();
+        return $headers;
     }
 
 }

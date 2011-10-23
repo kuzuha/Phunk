@@ -1,4 +1,3 @@
 <?php
 require 'bootstrap.php';
-array_shift($argv);
-Phunk\Util::phunk_up(realpath($argv[0]));
+Phunk\Util::phunk_up($argv[1], array('handler' => $argv[2]));

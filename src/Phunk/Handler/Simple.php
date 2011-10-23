@@ -71,7 +71,7 @@ class Simple implements \Phunk\Handler
     {
         $env = $this->_build_env();
         $res = $app($env);
-        $this->_handle_response($res);
+        $this->_handle_response($res[0], $res[1], $res[2]);
     }
 
     /**
@@ -95,17 +95,34 @@ class Simple implements \Phunk\Handler
 
     /**
      * @internal
-     * @param array $res
+     * @param int $status
+     * @param array $headers
+     */
+    function _output_headers($status, array $headers)
+    {
+        header("HTTP/1.1 {$status} {$this->_status_code[$status]}");
+        foreach ($headers as $key => $values) {
+            if (false === is_array($values)) {
+                header("$key: $values", false);
+                continue;
+            }
+            foreach ($values as $value) {
+                header("$key: $value", false);
+            }
+        }
+    }
+
+    /**
+     * @internal
+     * @param int $status
+     * @param array $headers
+     * @param string|array $body
      * @return void
      */
-    function _handle_response(array $res)
+    function _handle_response($status, array $headers, $body)
     {
-        header("HTTP/1.1 {$res[0]} {$this->_status_code[$res[0]]}");
-        foreach ($res[1] as $header) {
-            header($header);
-        }
+        $this->_output_headers($status, $headers);
 
-        $body = $res[2];
         if (is_string($body)) {
             print $body;
         } elseif (is_array($body)) {
